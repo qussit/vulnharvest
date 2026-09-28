@@ -1,20 +1,22 @@
 from openai import OpenAI
 
-client = OpenAI(
-    base_url="http://localhost:11434/v1/",
-    api_key="ollama",
-)
 
-response = client.chat.completions.create(
-    model="qwen3:8b",
-    messages=[
-        {"role": "system", "content": "Ты эксперт по безопасности приложений."},
-        {"role": "user", "content": "Что такое SQL-инъекция? Ответь одним предложением."},
-    ]
-)
+def analyze_function(code, client):
+    system_prompt = """Ты эксперт по безопасности приложений. Проанализируй Python-функцию на наличие уязвимостей (SQL-инъекции, path traversal, command injection).
 
-print("=== ПОЛНЫЙ ОТВЕТ ===")
-print(response)
-print()
-print("=== CONTENT ===")
-print(repr(response.choices[0].message.content))
+Верни ответ СТРОГО в формате JSON, без markdown, без пояснений:
+{
+  "vulnerable": true или false,
+  "type": "SQLi" или "PathTraversal" или "CommandInjection" или "None",
+  "confidence": число от 0.0 до 1.0,
+  "reason": "краткое объяснение"
+}"""
+
+    response = client.chat.completions.create(
+        model="qwen3:8b",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Проанализируй функцию:\n\n{code}"},
+        ]
+    )
+    return response.choices[0].message.content
