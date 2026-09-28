@@ -12,3 +12,8 @@ def unsafe_query(username):
     query = f"SELECT * FROM users WHERE name = '{username}'"
     cursor.execute(query)
     return cursor.fetchall()
+def hidden_query(username):
+    parts = ["SELECT * FROM users WHERE name = '", username, "'"]
+    query = "".join(parts)
+    cursor.execute(query)
+    return cursor.fetchall()
