@@ -1,10 +1,12 @@
 import sqlite3
 
+
 def safe_query(user_id):
     conn = sqlite3.connect("db.sqlite")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
     return cursor.fetchall()
+
 
 def unsafe_query(username):
     conn = sqlite3.connect("db.sqlite")
@@ -12,7 +14,11 @@ def unsafe_query(username):
     query = f"SELECT * FROM users WHERE name = '{username}'"
     cursor.execute(query)
     return cursor.fetchall()
+
+
 def hidden_query(username):
+    conn = sqlite3.connect("db.sqlite")
+    cursor = conn.cursor()
     parts = ["SELECT * FROM users WHERE name = '", username, "'"]
     query = "".join(parts)
     cursor.execute(query)
