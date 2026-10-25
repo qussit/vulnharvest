@@ -1,20 +1,18 @@
 from config import create_client
-from parser import extract_functions
-from test_llm import analyze_function
-from utils import parse_llm_response
+from analyzer import analyze_file
 
 client = create_client()
 
-funcs = extract_functions("test_code.py")
+results = analyze_file("test_code.py", client)
 
-for f in funcs:
-    print(f"=== {f['name']} ===")
-    result_text = analyze_function(f["code"], client)
+for r in results:
+    if r["error"]:
+        print(f"[{r['error']}]")
+        continue
 
-    result = parse_llm_response(result_text)
-
-    print(f"Vulnerable: {result['vulnerable']}")
-    print(f"Type: {result['type']}")
-    print(f"Confidence: {result['confidence']}")
-    print(f"Reason: {result['reason']}")
+    print(f"=== {r['function']} ===")
+    print(f"Vulnerable: {r['vulnerable']}")
+    print(f"Type: {r['type']}")
+    print(f"Confidence: {r['confidence']}")
+    print(f"Reason: {r['reason']}")
     print()
